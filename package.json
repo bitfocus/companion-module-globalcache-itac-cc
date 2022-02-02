@@ -9,11 +9,18 @@
 	"product": "iTach IP2CC",
 	"shortname": "ip2cc",
 	"description": "Companion Module for Global Cache IP to Contact Closure device.",
-	"homepage": "https://www.globalcache.com/products/itach/ip2cc-pspecs/",
+	"homepage": "https://github.com/bitfocus/companion-module-globalcache-itac-cc#readme",
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "Casey Selph <cxselph@gmail.com>",
-	"license": "MIT"
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/bitfocus/companion-module-globalcache-itac-cc/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bitfocus/companion-module-globalcache-itac-cc.git"
+	}
 }
