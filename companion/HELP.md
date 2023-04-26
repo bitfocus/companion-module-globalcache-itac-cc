@@ -4,6 +4,7 @@ This module connects to a GlobalCache iTach IP2CC device.
 ### Configuration
 * Type in the IP address of the device.
 * The device will use port 4998 to communicate.
+* Choose the number of ports available in the device.
 
-### Available actions
-* Choose Port (1-3) and State (Close/Open)
+### Available Actions
+* Choose Port and State (Close/Open)
