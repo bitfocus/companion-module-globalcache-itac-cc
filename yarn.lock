@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@companion-module/base@~1.4":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@companion-module/base/-/base-1.4.1.tgz#4ddc4ba636b672bcbbc3dc4645634007a49d6189"
-  integrity sha512-xg5OX33ptfFsV/drfeNTHID7hp9f2cdp8V+7Pj8uartdNstCr28W3bAy8xRz+XRFKxQVkJcL2LqrkYZ8GGfetw==
+"@companion-module/base@~1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@companion-module/base/-/base-1.2.0.tgz#2c5fd4e3af5a4d57cb06f4a9893beff36dd850e8"
+  integrity sha512-aqZdfVn+LlqrI04B5uamQZpFcmbd2dAKz6XwkCX9TXSPPnqbgAkDwcHa3pJQEpj19Wc1yKdth/p0EXxkKKbkaw==
   dependencies:
     "@sentry/node" "^7.36.0"
     "@sentry/tracing" "^7.36.0"
