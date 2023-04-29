@@ -26,6 +26,15 @@ class itac_cc extends InstanceBase {
 		})
 
 		this.socket = undefined
+
+		this.CHOICES_PORTS = [
+			{ id: '1', label: 'Port 1' },
+			{ id: '2', label: 'Port 2' },
+			{ id: '3', label: 'Port 3' },
+			{ id: '4', label: 'Port 4' },
+			{ id: '5', label: 'Port 5' },
+			{ id: '6', label: 'Port 6' },
+		];
 	}
 
 	async destroy() {
