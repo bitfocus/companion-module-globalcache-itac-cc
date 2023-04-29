@@ -73,6 +73,14 @@ class itac_cc extends InstanceBase {
 	
 		if (this.config.host) {
 			this.socket = new TCPHelper(this.config.host, 4998);
+
+			this.socket.on('connect', () => {
+				this.updateStatus(InstanceStatus.Ok);
+			});
+
+			this.socket.on('data', (receivebuffer) => {
+				//future feedbacks can be added here
+			});
 	
 			this.socket.on('error', function (err) {
 				this.log('error',"Network error: " + err.message);
