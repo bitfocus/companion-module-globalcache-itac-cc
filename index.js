@@ -35,6 +35,15 @@ class itac_cc extends InstanceBase {
 			{ id: '5', label: 'Port 5' },
 			{ id: '6', label: 'Port 6' },
 		];
+
+		this.DATA = [
+			{ port: '1', state: '0' },
+			{ port: '2', state: '0' },
+			{ port: '3', state: '0' },
+			{ port: '4', state: '0' },
+			{ port: '5', state: '0' },
+			{ port: '6', state: '0' },
+		]
 	}
 
 	async destroy() {
@@ -75,32 +84,81 @@ class itac_cc extends InstanceBase {
 	}
 
 	initTCP() {
-		if (this.socket !== undefined) {
-			this.socket.destroy();
-			delete this.socket;
+		let self = this;
+
+		if (self.socket !== undefined) {
+			self.socket.destroy();
+			delete self.socket;
 		}
 	
-		if (this.config.host) {
-			this.socket = new TCPHelper(this.config.host, 4998);
+		if (self.config.host) {
+			self.socket = new TCPHelper(this.config.host, 4998);
 
-			this.socket.on('connect', () => {
-				this.updateStatus(InstanceStatus.Ok);
+			self.socket.on('connect', () => {
+				self.updateStatus(InstanceStatus.Ok);
+				self.log('debug', 'Connected');
+				self.startPolling();
 			});
 
-			this.socket.on('data', (receivebuffer) => {
-				//future feedbacks can be added here
+			self.socket.on('data', (data) => {
+				self.log('debug', 'Received: ' + data);
+				let lines = data.toString().split('\r\n');
+				for (let i = 0; i < lines.length; i++) {
+					let line = lines[i];
+					let matches = line.match(/state,(\d+):(\d+),(\d+)/);
+					if (matches) {
+						let port = matches[2];
+						let state = matches[3];
+						self.updatePortState(port, state);
+					}
+				}
 			});
 	
-			this.socket.on('error', function (err) {
-				this.log('error',"Network error: " + err.message);
+			self.socket.on('error', function (err) {
+				self.log('error',"Network error: " + err.message);
+				clearInterval(self.pollTimer);
 			});
 		}
 	}
 
+	startPolling() {
+		let self = this;
+		if (self.config.poll_interval > 0) {
+			self.pollTimer = setInterval(() => {
+				self.getStates();
+			}, self.config.poll_interval);
+		}
+	}
+
+	getStates() {
+		let self = this;
+		for (let i = 1; i <= self.config.ports; i++) {
+			let cmd = `getstate,1:${i}`;
+			self.sendCommand(cmd);
+		}
+	}
+
+	updatePortState(port, state) {
+		let self = this;
+
+		for (let i = 0; i < self.DATA.length; i++) {
+			let portObj = self.DATA[i];
+			if (self.DATA[i].port == port) {
+				self.DATA[i].state = state;
+				self.checkFeedbacks('relaystate');
+				self.checkVariables();
+				break;
+			}
+		}
+	}
+
 	sendCommand(cmd) {
+		let self = this;
+
 		if (cmd !== undefined) {
-			if (this.socket !== undefined && this.socket.isConnected) {
-				this.socket.send(cmd + '\r\n')
+			if (self.socket !== undefined && self.socket.isConnected) {
+				self.log('debug', 'Sending: ' + cmd);
+				self.socket.send(cmd + '\r\n')
 				.then((result) => {
 					//console.log('send result: ' + result);
 				})
@@ -108,8 +166,8 @@ class itac_cc extends InstanceBase {
 					//console.log('send error: ' + error);
 				});
 			} else {
-				this.log('error', 'Network error: Connection to Device not opened.')
-				clearInterval(this.pollTimer);
+				self.log('error', 'Network error: Connection to Device not opened.')
+				clearInterval(self.pollTimer);
 			}
 		}
 	}

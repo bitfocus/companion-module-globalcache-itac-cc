@@ -25,7 +25,7 @@ module.exports = {
 			],
 			callback: async (event) => {
 				let opt  = event.options;
-				let cmd  = `setstate,1:${opt.portNum.replace(',', '')},${opt.setPort}}`;
+				let cmd  = `setstate,1:${opt.portNum.replace(',', '')},${opt.setPort}`;
 				this.sendCommand(cmd);
 			}
 		}

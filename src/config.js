@@ -28,8 +28,8 @@ module.exports = {
 					{ id: 3, label: '3' },
 					{ id: 6, label: '6' },
 				]
-			}
-			/*{
+			},
+			{
 				type: 'number',
 				id: 'poll_interval',
 				label: 'Polling Interval (ms), set to 0 to disable polling',
@@ -37,7 +37,7 @@ module.exports = {
 				max: 30000,
 				default: 1000,
 				width: 3,
-			}*/
+			}
 		]
 	}
 }
