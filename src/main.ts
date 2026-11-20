@@ -53,6 +53,8 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 	readonly #pendingReverts = new Map<string, RelayState>()
 	#socket: TCPHelper | undefined
 	#pollTimer: NodeJS.Timeout | undefined
+	/** Last network error logged, so a retry loop does not log the same failure again */
+	#lastNetworkError: string | undefined
 	#receiveBuffer = ''
 	/** Lines of a `getdevices` reply received so far, or undefined when not waiting for one */
 	#deviceLines: string[] | undefined
@@ -201,6 +203,7 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 		this.#socket?.destroy()
 		this.#socket = undefined
 		this.#receiveBuffer = ''
+		this.#lastNetworkError = undefined
 		this.#stopWaitingForDevices()
 
 		if (!this.config.host) {
@@ -221,6 +224,7 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 		})
 
 		socket.on('connect', () => {
+			this.#lastNetworkError = undefined
 			this.log('debug', 'Connected')
 			this.#receiveBuffer = ''
 			this.#deviceLines = []
@@ -242,19 +246,22 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 		})
 
 		socket.on('error', (err) => {
+			// TCPHelper emits this on every retry, about every 2 seconds, until the connection succeeds
+			if (this.#lastNetworkError === err.message) return
+			this.#lastNetworkError = err.message
 			this.log('error', `Network error: ${err.message}`)
 		})
 	}
 
 	#handleLine(line: string): void {
-		this.log('debug', `Received: ${line}`)
-
 		if (this.#deviceLines) {
 			if (line === 'endlistdevices') {
+				this.log('debug', `Received: ${line}`)
 				this.#finishDiscovery(parseDevices(this.#deviceLines))
 				return
 			}
 			if (line.startsWith('device,')) {
+				this.log('debug', `Received: ${line}`)
 				this.#deviceLines.push(line)
 				return
 			}
@@ -262,6 +269,8 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 
 		const state = STATE_REGEX.exec(line)
 		if (state) {
+			// getstate replies repeat on every poll; only a change is worth a log line
+			if (this.#states.get(state[1]) !== state[2]) this.log('debug', `Received: ${line}`)
 			this.#storeState(state[1], state[2] as RelayState)
 			return
 		}
@@ -274,7 +283,10 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 
 			// Nothing else is sent while waiting, so this is the device rejecting getdevices
 			if (this.#deviceLines) this.#finishDiscovery(this.device)
+			return
 		}
+
+		this.log('debug', `Received: ${line}`)
 	}
 
 	#stopWaitingForDevices(): void {

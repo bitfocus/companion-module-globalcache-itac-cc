@@ -4,6 +4,17 @@ All notable changes to this module are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.1] - 2026-11-20
+
+### Fixed
+
+- Debug logging no longer records every polled relay state, only a change.
+- A connection failure is logged once, rather than on every reconnect attempt, until the connection succeeds or the error changes.
+
+### Changed
+
+- Updated development dependencies.
+
 ## [3.0.0] - 2026-11-19
 
 Requires Companion 5.0 or later or Bitfocus Buttons 1.8 or later.
@@ -39,5 +50,6 @@ Requires Companion 5.0 or later or Bitfocus Buttons 1.8 or later.
 
 Last release of the JavaScript module.
 
+[3.0.1]: https://github.com/bitfocus/companion-module-globalcache-itac-cc/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/bitfocus/companion-module-globalcache-itac-cc/compare/v2.0.5...v3.0.0
 [2.0.5]: https://github.com/bitfocus/companion-module-globalcache-itac-cc/releases/tag/v2.0.5
