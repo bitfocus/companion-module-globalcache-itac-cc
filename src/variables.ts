@@ -1,32 +1,26 @@
-import type { itac_cc } from './main.js'
+import type ModuleInstance from './main.js'
 
-export function UpdateVariableDefinitions(instance: itac_cc): void {
-	const variables = []
-
-	for (let i = 0; i < instance.config.ports; i++) {
-		variables.push({
-			label: `Port ${i + 1} State`,
-			name: `port_${i + 1}_state`,
-		})
-	}
-
-	instance.setVariableDefinitions(variables)
+export type VariablesSchema = {
+	[id: `port_${number}_state`]: '0' | '1' | undefined
+	[id: `port_${number}_status`]: 'Open' | 'Closed' | undefined
 }
 
-export function CheckVariables(_instance: itac_cc): void {
-	try {
-		const variableObj = {}
-
-		for (let i = 0; i < this.config.ports; i++) {
-			const port = i + 1
-			const portObj = this.DATA.find((PORT) => PORT.port == port)
-			if (portObj) {
-				variableObj[`port_${port}_state`] = portObj.state
-			}
-		}
-
-		this.setVariableValues(variableObj)
-	} catch (error) {
-		this.log('error', `Error checking variables: ${error.toString()}`)
+export function UpdateVariableDefinitions(self: ModuleInstance): void {
+	const variables: Record<keyof VariablesSchema, { name: string }> = {}
+	for (const { id, label } of self.relayChoices) {
+		variables[`port_${Number(id)}_state`] = { name: `${label} State (1 closed, 0 open)` }
+		variables[`port_${Number(id)}_status`] = { name: `${label} Status (Closed/Open)` }
 	}
+	self.setVariableDefinitions(variables)
+}
+
+/** Values stay empty until the device has reported the relay's state */
+export function UpdateVariableValues(self: ModuleInstance): void {
+	const values: VariablesSchema = {}
+	for (const { id } of self.relayChoices) {
+		const state = self.relayState(id)
+		values[`port_${Number(id)}_state`] = state === '1' || state === '0' ? state : undefined
+		values[`port_${Number(id)}_status`] = state === undefined ? undefined : state === '1' ? 'Closed' : 'Open'
+	}
+	self.setVariableValues(values)
 }

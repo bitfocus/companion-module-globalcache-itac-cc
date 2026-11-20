@@ -1,13 +1,19 @@
 {
+	"$schema": "../node_modules/@companion-module/base/assets/manifest.schema.json",
+	"type": "connection",
 	"id": "globalcache-itac-cc",
 	"name": "globalcache-itac-cc",
 	"shortname": "ip2cc",
-	"description": "Companion Module for Global Cache IP to Contact Closure device.",
+	"description": "Control Global Cache IP to Contact Closure devices (iTach IP2CC, GC-100).",
 	"version": "0.0.0",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-globalcache-itac-cc.git",
 	"bugs": "https://github.com/bitfocus/companion-module-globalcache-itac-cc/issues",
 	"maintainers": [
+		{
+			"name": "Bitfocus AS",
+			"email": "connections@bitfocus.io"
+		},
 		{
 			"name": "Joseph Adams",
 			"email": "josephdadams@gmail.com"
@@ -19,12 +25,12 @@
 	],
 	"legacyIds": [],
 	"runtime": {
-		"type": "node22",
+		"type": "node26",
 		"api": "nodejs-ipc",
 		"apiVersion": "0.0.0",
 		"entrypoint": "../dist/main.js"
 	},
 	"manufacturer": "Global Cache",
-	"products": ["iTach IP2CC"],
-	"keywords": ["Generic"]
+	"products": ["iTach IP2CC", "GC-100"],
+	"keywords": ["Relay", "Contact Closure", "GPIO", "GPO"]
 }

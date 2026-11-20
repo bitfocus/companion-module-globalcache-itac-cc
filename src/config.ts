@@ -1,8 +1,7 @@
 import { Regex, type SomeCompanionConfigField } from '@companion-module/base'
 
-export interface ModuleConfig {
+export type ModuleConfig = {
 	host: string
-	ports: number
 	poll_interval: number
 }
 
@@ -14,7 +13,7 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			width: 12,
 			label: 'Information',
 			value:
-				'This module controls an itac IP2CC device by <a href="https://www.globalcache.com/products/itach/ip2ccspecs/" target="_new">Global Cache</a>.',
+				'This module controls the relays of a <a href="https://www.globalcache.com/products/itach/ip2ccspecs/" target="_new">Global Cache</a> iTach IP2CC or GC-100. The relays are detected from the device when it connects.',
 		},
 		{
 			type: 'textinput',
@@ -25,21 +24,10 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			regex: Regex.IP,
 		},
 		{
-			type: 'dropdown',
-			id: 'ports',
-			label: 'Number of Ports',
-			width: 6,
-			default: 3,
-			choices: [
-				{ id: 3, label: '3' },
-				{ id: 6, label: '6' },
-			],
-		},
-		{
 			type: 'number',
 			id: 'poll_interval',
 			label: 'Polling Interval (ms), set to 0 to disable polling',
-			min: 50,
+			min: 0,
 			max: 30000,
 			default: 1000,
 			width: 3,

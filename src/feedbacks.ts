@@ -1,19 +1,30 @@
-import type { itac_cc } from './main.js'
-import { combineRgb } from '@companion-module/base'
+import type ModuleInstance from './main.js'
 
-export function UpdateFeedbacks(instance: itac_cc): void {
-	instance.setFeedbackDefinitions({
+export type FeedbacksSchema = {
+	relaystate: {
+		type: 'boolean'
+		options: {
+			portNum: string
+			state: string
+		}
+	}
+}
+
+export function UpdateFeedbacks(self: ModuleInstance): void {
+	self.setFeedbackDefinitions({
 		relaystate: {
 			type: 'boolean',
-			name: 'Relay is in X State',
-			description: 'Show feedback for Relay State',
+			name: 'Relay State',
+			description: 'Relay is in the selected state',
 			options: [
 				{
 					type: 'dropdown',
 					label: 'Choose Port',
 					id: 'portNum',
-					default: instance.CHOICES_PORTS[0].id,
-					choices: instance.CHOICES_PORTS,
+					default: '1',
+					choices: self.relayChoices,
+					// Before the device has been asked for its relays, a saved port may not be listed yet
+					allowInvalidValues: true,
 				},
 				{
 					type: 'dropdown',
@@ -24,25 +35,14 @@ export function UpdateFeedbacks(instance: itac_cc): void {
 						{ id: '1', label: 'On (Close)' },
 						{ id: '0', label: 'Off (Open)' },
 					],
+					disableAutoExpression: true,
 				},
 			],
 			defaultStyle: {
-				color: combineRgb(0, 0, 0),
-				bgcolor: combineRgb(255, 0, 0),
+				color: 0x000000,
+				bgcolor: 0xff0000,
 			},
-			callback: (event) => {
-				const opt = event.options
-
-				const portObj = instance.DATA.find((PORT) => PORT.port == opt.portNum)
-
-				if (portObj) {
-					if (portObj.state == opt.state) {
-						return true
-					}
-				}
-
-				return false
-			},
+			callback: ({ options }) => self.relayState(options.portNum) === options.state,
 		},
 	})
 }

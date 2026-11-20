@@ -1,64 +1,63 @@
-import type { itac_cc } from './main.js'
-import { CompanionPresetDefinitions } from '@companion-module/base'
+import type {
+	CompanionPresetDefinitions,
+	CompanionPresetGroup,
+	CompanionSimplePresetDefinition,
+} from '@companion-module/base'
+import type ModuleInstance from './main.js'
+import type { ModuleSchema } from './main.js'
 
-export function UpdatePresets(instance: itac_cc): void {
-	const presets: CompanionPresetDefinitions = {}
+const WHITE = 0xffffff
+const BLACK = 0x000000
+const RED = 0xff0000
+const GREEN = 0x00cc00
 
-	for (let i = 1; i <= instance.config.ports; i++) {
-		presets[i + 'close'] = {
-			type: 'button',
-			category: `Port ${i}`,
-			name: 'Close',
-			style: {
-				text: `PORT ${i}\\nCLOSE`,
-				size: '14',
-				color: 16777215,
-				bgcolor: 0,
+function relayPreset(
+	port: string,
+	name: string,
+	text: string,
+	setPort: string,
+	feedbackState: string,
+	feedbackColor: number,
+): CompanionSimplePresetDefinition<ModuleSchema> {
+	return {
+		type: 'simple',
+		name,
+		style: { text: `PORT ${port}\\n${text}`, size: '14', color: WHITE, bgcolor: BLACK, show_topbar: false },
+		steps: [{ down: [{ actionId: 'portSet', options: { portNum: port, setPort, duration: 0 } }], up: [] }],
+		feedbacks: [
+			{
+				feedbackId: 'relaystate',
+				options: { portNum: port, state: feedbackState },
+				style: { bgcolor: feedbackColor },
 			},
-			steps: [
-				{
-					down: [
-						{
-							actionId: 'portSet',
-							options: {
-								portNum: i.toString(),
-								setPort: '1',
-							},
-						},
-					],
-					up: [],
-				},
-			],
-			feedbacks: [],
-		}
+		],
+	}
+}
 
-		presets[i + 'open'] = {
-			type: 'button',
-			category: `Port ${i}`,
-			name: 'Open',
-			style: {
-				text: `PORT ${i}\\nOPEN`,
-				size: '14',
-				color: 16777215,
-				bgcolor: 0,
-			},
-			steps: [
-				{
-					down: [
-						{
-							actionId: 'portSet',
-							options: {
-								portNum: i.toString(),
-								setPort: '0',
-							},
-						},
-					],
-					up: [],
-				},
-			],
-			feedbacks: [],
-		}
+export function UpdatePresets(self: ModuleInstance): void {
+	const groups: CompanionPresetGroup<ModuleSchema>[] = []
+	const presets: CompanionPresetDefinitions<ModuleSchema> = {}
+
+	for (const { id: port, label } of self.relayChoices) {
+		// Companion replaces the variable prefix with the connection's label when the preset is used
+		presets[`${port}toggle`] = relayPreset(
+			port,
+			'Toggle',
+			`$(globalcache-itac-cc:port_${port}_status)`,
+			'toggle',
+			'1',
+			RED,
+		)
+		presets[`${port}close`] = relayPreset(port, 'Close', 'CLOSE', '1', '1', RED)
+		presets[`${port}open`] = relayPreset(port, 'Open', 'OPEN', '0', '0', GREEN)
+
+		groups.push({
+			id: `port${port}`,
+			type: 'simple',
+			name: label,
+			presets: [`${port}toggle`, `${port}close`, `${port}open`],
+		})
 	}
 
-	instance.setPresetDefinitions(presets)
+	self.setPresetDefinitions([{ id: 'ports', name: 'Ports', definitions: groups }], presets)
 }
