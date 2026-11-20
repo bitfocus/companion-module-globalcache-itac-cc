@@ -53,6 +53,8 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 	readonly #pendingReverts = new Map<string, RelayState>()
 	#socket: TCPHelper | undefined
 	#pollTimer: NodeJS.Timeout | undefined
+	/** Last network error logged, so a retry loop does not log the same failure again */
+	#lastNetworkError: string | undefined
 	#receiveBuffer = ''
 	/** Lines of a `getdevices` reply received so far, or undefined when not waiting for one */
 	#deviceLines: string[] | undefined
@@ -201,6 +203,7 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 		this.#socket?.destroy()
 		this.#socket = undefined
 		this.#receiveBuffer = ''
+		this.#lastNetworkError = undefined
 		this.#stopWaitingForDevices()
 
 		if (!this.config.host) {
@@ -221,6 +224,7 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 		})
 
 		socket.on('connect', () => {
+			this.#lastNetworkError = undefined
 			this.log('debug', 'Connected')
 			this.#receiveBuffer = ''
 			this.#deviceLines = []
@@ -242,6 +246,9 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 		})
 
 		socket.on('error', (err) => {
+			// TCPHelper emits this on every retry, about every 2 seconds, until the connection succeeds
+			if (this.#lastNetworkError === err.message) return
+			this.#lastNetworkError = err.message
 			this.log('error', `Network error: ${err.message}`)
 		})
 	}
