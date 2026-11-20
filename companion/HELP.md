@@ -14,11 +14,11 @@ A GC-100 accepts only one connection on port 4998, so other software (such as iH
 
 ### Available Actions
 
-- Choose Port and State: Close, Open or Toggle, with an optional pulse duration that switches the relay back after the given time. Toggle uses the last state read from the device.
+- Set Relay State: Close, Open or Toggle, with an optional pulse duration that switches the relay to the opposite state after the given time. Toggle uses the last state read from the device.
 
 ### Available Feedbacks
 
-- Relay is in X State
+- Relay State: the relay is in the selected state
 
 ### Available Variables
 

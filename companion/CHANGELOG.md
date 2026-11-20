@@ -11,8 +11,8 @@ Requires Companion 5.0 or later or Bitfocus Buttons 1.8 or later.
 ### Added
 
 - Support for the GC-100. The relays are read from the device when it connects, so commands go to the right module (module 1 on an iTach IP2CC, module 3 on a GC-100-12).
-- A Toggle option in the "Choose port and state" action, which switches the relay to the opposite of its last known state.
-- A pulse duration in the "Choose port and state" action, which switches the relay back after the given time. Existing actions keep latching (duration 0).
+- A Toggle option in the "Set Relay State" action (previously "Choose port and state"), which switches the relay to the opposite of its last known state.
+- A pulse duration in the "Set Relay State" action, which switches the relay to the opposite state after the given time. If the connection drops during a pulse, the relay is switched back once it returns. Existing actions keep latching (duration 0).
 - `port_N_status` variables, showing `Closed` or `Open`.
 - A Toggle preset for each port, showing the port's status, and state feedback on all presets.
 - Connection status reflects the TCP connection (connecting, connected, disconnected), and reports when the device has no relays.

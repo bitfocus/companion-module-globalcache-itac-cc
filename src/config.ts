@@ -13,7 +13,7 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			width: 12,
 			label: 'Information',
 			value:
-				'This module controls the relays of a <a href="https://www.globalcache.com/products/itach/ip2ccspecs/" target="_new">Global Cache</a> iTach IP2CC or GC-100. The relays are detected from the device when it connects.',
+				'This module controls the relays of a Global Cache iTach IP2CC or GC-100. The relays are detected from the device when it connects.',
 		},
 		{
 			type: 'textinput',

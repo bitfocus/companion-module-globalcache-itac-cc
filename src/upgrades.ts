@@ -23,7 +23,7 @@ function v3_0_removePortsConfig(_context: Context, { config }: Props): Result {
 	return { updatedConfig, updatedActions: [], updatedFeedbacks: [] }
 }
 
-/** The "Choose port and state" action gained a pulse duration; existing actions keep latching */
+/** The "Set Relay State" action gained a pulse duration; existing actions keep latching */
 function v3_0_addPulseDuration(_context: Context, { actions }: Props): Result {
 	const updatedActions = actions.filter((action) => action.actionId === 'portSet' && !action.options.duration)
 	for (const action of updatedActions) {

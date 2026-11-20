@@ -1,3 +1,4 @@
+import type { Relay } from './devices.js'
 import type ModuleInstance from './main.js'
 
 export type VariablesSchema = {
@@ -15,12 +16,12 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 }
 
 /** Values stay empty until the device has reported the relay's state */
-export function UpdateVariableValues(self: ModuleInstance): void {
+export function UpdateVariableValues(self: ModuleInstance, relays: Relay[]): void {
 	const values: VariablesSchema = {}
-	for (const { id } of self.relayChoices) {
-		const state = self.relayState(id)
-		values[`port_${Number(id)}_state`] = state === '1' || state === '0' ? state : undefined
-		values[`port_${Number(id)}_status`] = state === undefined ? undefined : state === '1' ? 'Closed' : 'Open'
+	for (const relay of relays) {
+		const state = self.getState(relay)
+		values[`port_${Number(relay.id)}_state`] = state
+		values[`port_${Number(relay.id)}_status`] = state && (state === '1' ? 'Closed' : 'Open')
 	}
 	self.setVariableValues(values)
 }

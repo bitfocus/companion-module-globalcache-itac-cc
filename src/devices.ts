@@ -1,3 +1,10 @@
+/** '1' is closed, '0' is open */
+export type RelayState = '0' | '1'
+
+export function oppositeState(state: RelayState): RelayState {
+	return state === '1' ? '0' : '1'
+}
+
 export type Relay = {
 	/** 1-based relay number across all relay modules, used as the action/feedback/variable id */
 	id: string

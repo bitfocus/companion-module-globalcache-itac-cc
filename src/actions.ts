@@ -40,7 +40,7 @@ export function UpdateActions(self: ModuleInstance): void {
 				{
 					type: 'number',
 					label: 'Pulse Duration (ms), 0 to latch',
-					description: 'After this time the relay is switched back to the state it was in before',
+					description: 'After this time the relay is switched to the opposite state',
 					id: 'duration',
 					default: 0,
 					min: 0,
