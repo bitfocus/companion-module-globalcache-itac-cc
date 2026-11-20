@@ -247,14 +247,14 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 	}
 
 	#handleLine(line: string): void {
-		this.log('debug', `Received: ${line}`)
-
 		if (this.#deviceLines) {
 			if (line === 'endlistdevices') {
+				this.log('debug', `Received: ${line}`)
 				this.#finishDiscovery(parseDevices(this.#deviceLines))
 				return
 			}
 			if (line.startsWith('device,')) {
+				this.log('debug', `Received: ${line}`)
 				this.#deviceLines.push(line)
 				return
 			}
@@ -262,6 +262,8 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 
 		const state = STATE_REGEX.exec(line)
 		if (state) {
+			// getstate replies repeat on every poll; only a change is worth a log line
+			if (this.#states.get(state[1]) !== state[2]) this.log('debug', `Received: ${line}`)
 			this.#storeState(state[1], state[2] as RelayState)
 			return
 		}
@@ -274,7 +276,10 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 
 			// Nothing else is sent while waiting, so this is the device rejecting getdevices
 			if (this.#deviceLines) this.#finishDiscovery(this.device)
+			return
 		}
+
+		this.log('debug', `Received: ${line}`)
 	}
 
 	#stopWaitingForDevices(): void {
